@@ -56,25 +56,52 @@ def locateGoodPotato():
     else: 
         LOCATECOUNT = 0
 
+def countdown(time_sec):
+    while time_sec:
+        mins, secs = divmod(time_sec, 60)
+        timeformat = '{:02d}:{:02d}'.format(mins, secs)
+        print(timeformat, end='\r')
+        time.sleep(1)
+        time_sec -= 1
+
+    print("stop")
+
 # clickStart() # start game
 
-t_end = time.time() + 70
-while time.time() < t_end: # run for 60 seconds
-    if GAME_STARTED == False:
-        clickStart() # start game
+# t_end = time.time() + 70
+# while time.time() < t_end: # run for 60 seconds
+#     if GAME_STARTED == False:
+#         clickStart() # start game
 
-    locateGoodPotato()
-    if LOCATECOUNT > 0:
-        print("     ")
-    if LOCATECOUNT == 10 and time.time() > t_end:
-        print("Game Finished - Potato Count: " + str(POTATO_COUNT))
-        print("Can't find potato - sleeping for 5 minutes")
-        time.sleep(60*5) # sleep for 5 minutes 
+#     locateGoodPotato()
+#     if LOCATECOUNT > 0:
+#         print("     ")
+#     if LOCATECOUNT == 10 and time.time() > t_end:
+#         print("Game Finished - Potato Count: " + str(POTATO_COUNT))
+#         print("Can't find potato - sleeping for 5 minutes")
+#         time.sleep(60*5) # sleep for 5 minutes 
 
-        # reset variables
-        t_end = time.time() + 60
-        LOCATECOUNT = 0
-        STARTFIND = 0 
-        GAME_STARTED = False
-        POTATO_COUNT = 0
+#         # reset variables
+#         t_end = time.time() + 60
+#         LOCATECOUNT = 0
+#         STARTFIND = 0 
+#         GAME_STARTED = False
+#         POTATO_COUNT = 0
 
+while True:
+    try:
+        if GAME_STARTED == True:
+            t_end = time.time() + 63
+            locateGoodPotato()
+        else:
+            clickStart()
+        if LOCATECOUNT == 10:
+            print("Game Finished - Potato Count: "+ str(POTATO_COUNT))
+            GAME_STARTED = False
+            LOCATECOUNT = 0
+            print('Sleeping for 5 mintues')
+            # time.sleep(60*5) # sleep for 5 minutes
+            countdown(60*5)
+    except:
+        # time.sleep(10)
+        countdown(10)
