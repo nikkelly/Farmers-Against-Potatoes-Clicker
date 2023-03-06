@@ -7,13 +7,16 @@ Python 3.9 (Recommend)
 
 ## Feature
 Support Auto Click Potato and Gold Potato
+
 Count How Many Potato Auto Clicked
+
 Auto re-Whack
 
 Enjoy Your Idle!
 
 ## Troubleshooting
 Q:Why Program not working Properly?
+
 A:Try edit main.py and change confidence number.(Larger numbers mean more accurate matches,try to make the number smaller)
 
 ## How to run
