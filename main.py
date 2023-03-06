@@ -1,8 +1,5 @@
-
-#TODO Add red potato tracking to ignore
-#TODO Why does it exit after a few instead of sleeping?
-
 import pyautogui
+import cv2
 import time
 
 LOCATECOUNT = 0
@@ -10,23 +7,11 @@ STARTFIND = 0
 GAME_STARTED = False
 POTATO_COUNT = 0
 
-def clickWhack():
-    whackButton = pyautogui.locateOnScreen('images/960x540/whackAPotato.png')
-    if whackButton != None:
-        print('Move to Whack-A-Potato')
-        pyautogui.moveTo(whackButton)        
-        pyautogui.click()
-        print(' Clicked Whack-A-Potato')
-        time.sleep(2)
-
 def clickStart():
     global STARTFIND
     global GAME_STARTED
 
-    startButton = pyautogui.locateOnScreen('images/960x540/start.png',confidence=0.9)
-
-    if STARTFIND > 3:
-        raise ValueError("Can't see start button")
+    startButton = pyautogui.locateOnScreen('images/960x540/start.png',confidence=0.5)
 
     if startButton != None:
         print('Starting Game')
@@ -44,17 +29,26 @@ def locateGoodPotato():
     global LOCATECOUNT
     global POTATO_COUNT
 
-    goodPotato_1 = pyautogui.locateOnScreen('images/960x540/goodPotato_1.png',confidence=0.7)
+    goodPotato_1 = pyautogui.locateOnScreen('images/960x540/goodPotato_1.png',confidence=0.55)
     if goodPotato_1 != None:
         pyautogui.moveTo(goodPotato_1)
         pyautogui.click()
         print("Potato Found!")
         POTATO_COUNT += 1
 
-    if (goodPotato_1 == None):
-        LOCATECOUNT += 1
-    else: 
-        LOCATECOUNT = 0
+
+    goodPotato_2 = pyautogui.locateOnScreen('images/960x540/goodPotato_2.png',confidence=0.55)
+    if goodPotato_2 != None:
+        pyautogui.moveTo(goodPotato_2)
+        pyautogui.click()
+        print("Potato Found!")
+        POTATO_COUNT += 1
+    
+    timetocount = pyautogui.locateOnScreen('images/960x540/timetocount.png',confidence=0.9)
+    if timetocount != None:
+        print("Times up!")
+        LOCATECOUNT = 1
+
 
 def countdown(time_sec):
     while time_sec:
@@ -64,7 +58,7 @@ def countdown(time_sec):
         time.sleep(1)
         time_sec -= 1
 
-    print("stop")
+    print("Start Button Missing!")
 
 while True:
     try:
@@ -75,7 +69,7 @@ while True:
             print('Trying to start')
             clickStart()
             LOCATECOUNT = 0
-        if LOCATECOUNT == 10 and GAME_STARTED == True:
+        if LOCATECOUNT == 1 and GAME_STARTED == True:
             print("Game Finished - Potato Count: "+ str(POTATO_COUNT))
             GAME_STARTED = False
             LOCATECOUNT = 0
