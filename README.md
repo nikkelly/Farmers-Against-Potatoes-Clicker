@@ -21,4 +21,5 @@ A:Try edit main.py and change confidence number.(Larger numbers mean more accura
 
 ## How to run
 1. Open Whack-A-Potato Until You Can See The "Start" Button
+2. Open shop and rejoin Whack-A-Potato make sure the potatoes on the right side of the game disappear and become statistics.
 2. Run `python .\main.py`
