@@ -11,7 +11,7 @@ def clickStart():
     global STARTFIND
     global GAME_STARTED
 
-    startButton = pyautogui.locateOnScreen('images/960x540/start.png',confidence=0.5)
+    startButton = pyautogui.locateOnScreen('images/960x540/start.png',confidence=0.8)
 
     if startButton != None:
         print('Starting Game')
