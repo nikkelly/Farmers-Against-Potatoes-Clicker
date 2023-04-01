@@ -37,8 +37,8 @@ jobs:
           tag_name: ${{ env.NEW_TAG }}
           release_name: Release ${{ env.NEW_TAG }} - ${{ github.event.pull_request.title }}
           body: ${{ github.event.pull_request.body }}
-          draft: false
-          prerelease: false
+          draft: true
+          prerelease: true
 
       - name: Comment on PR
         env:
