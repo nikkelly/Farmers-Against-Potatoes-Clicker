@@ -1,6 +1,8 @@
 name: Black
 
-on: [push]
+on:
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   formatting:
@@ -19,13 +21,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install black
 
-    - name: Run black
-      run: black --check .
-
-    - name: Commit changes
+    - name: Run black and generate diff
       run: |
-        git config --global user.name 'GitHub Actions'
-        git config --global user.email 'actions@users.noreply.github.com'
-        git add -u
-        git commit -m "Apply black formatting" || exit 0
-        git push
+        black --check --diff . > black_diff.txt || true
+
+    - name: Comment on PR
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [[ -s black_diff.txt ]]; then
+          pr_comment=":black_large_square: **Black Formatting Suggestions**
+
+          \`\`\`diff
+          $(cat black_diff.txt)
+          \`\`\`
+          "
+          comment_url="${{ github.event.pull_request.comments_url }}"
+          curl -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" --data "{ \"body\": \"$pr_comment\" }" "$comment_url"
+        fi

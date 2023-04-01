@@ -1,24 +1,31 @@
 name: Tests
 
-on: [push, pull_request]
+on:
+  pull_request:
+    types: [opened, synchronize]
 
-jobs:
-  pytest:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v2
+- name: Run pytest
+  run: |
+    pytest --junitxml=pytest_report.xml
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.x
+- name: Install xsltproc
+  run: sudo apt-get install xsltproc
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest
+- name: Convert pytest report
+  run: |
+    xsltproc --novalid -o pytest_report.txt .github/workflows/pytest-to-text.xsl pytest_report.xml
 
-    - name: Run tests
-      run: pytest
+- name: Comment on PR
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run: |
+    if grep -q 'failures=' pytest_report.txt; then
+      pr_comment=":x: **Test Failures**
+
+      \`\`\`
+      $(cat pytest_report.txt)
+      \`\`\`
+      "
+      comment_url="${{ github.event.pull_request.comments_url }}"
+      curl -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" --data "{ \"body\": \"$pr_comment\" }" "$comment_url"
+    fi
