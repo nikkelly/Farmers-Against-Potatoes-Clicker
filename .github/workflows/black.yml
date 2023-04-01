@@ -1,0 +1,41 @@
+name: Black
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black
+
+    - name: Run black and generate diff
+      run: |
+        black --check --diff . > black_diff.txt || true
+
+    - name: Comment on PR
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [[ -s black_diff.txt ]]; then
+          pr_comment=":black_large_square: **Black Formatting Suggestions**
+
+          \`\`\`diff
+          $(cat black_diff.txt)
+          \`\`\`
+          "
+          comment_url="${{ github.event.pull_request.comments_url }}"
+          curl -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" --data "{ \"body\": \"$pr_comment\" }" "$comment_url"
+        fi

@@ -1,25 +1,45 @@
-# Farmers-Against-Potatoes-Clicker
-Automating Whack A Potato
+# Farmers Against Potatoes Clicker
 
-## Installation Requirements
-Python 3.9 (Recommend)
-`pip install pyautogui openvc-python`
+An automation tool for "Farmers Against Potatoes Idle", clicking on good potatoes for a seamless gaming experience.
 
-## Feature
-Support Auto Click Potato and Gold Potato
+## Features
 
-Count How Many Potato Auto Clicked
+- Auto-starts game
+- Identifies & clicks good potatoes
+- Countdown during breaks
+- Sleeps before game restart
 
-Auto re-Whack
+## Installation
 
-Enjoy Your Idle!
+1. Install Python 3.6+: [official website](https://www.python.org/downloads/)
+2. Clone the repository: `git clone https://github.com/nikkelly/farmers-against-potatoes-clicker.git`
+3. Change to project folder: `cd farmers-against-potatoes-clicker`
+4. Install dependencies: `pip install -r requirements.txt`
+5. Prepare images/960x540 folder with necessary images for game elements.
 
-## Troubleshooting
-Q:Why Program not working Properly?
+## Usage
 
-A:Try edit main.py and change confidence number.(Larger numbers mean more accurate matches,try to make the number smaller)
+Run the script: `python main.py`
 
-## How to run
-1. Open Whack-A-Potato Until You Can See The "Start" Button
-2. Open shop and rejoin Whack-A-Potato make sure the potatoes on the right side of the game disappear and become statistics.
-2. Run `python .\main.py`
+The script auto-starts the game, clicks on good potatoes, and sleeps before restarting.
+
+## Contributing
+
+1. Fork the repository
+2. Create a new branch: `git checkout -b your-feature-branch`
+3. Commit changes: `git commit -am 'Add a new feature'`
+4. Push to branch: `git push origin your-feature-branch`
+5. Create a new Pull Request
+
+## License
+
+Released under the [MIT License](https://opensource.org/licenses/MIT).
+
+## Images
+
+The images used by the script should be located in the `images/960x540` directory in the project folder. This directory should contain the following images:
+
+- `start.png`: Image of the start button in the game.
+- `goodPotato_1.png`: Image of a good potato to be clicked.
+- `goodPotato_2.png`: Image of a second good potato to be clicked.
+- `timetocount.png`: Image that appears when it is time to wait before restarting the game.

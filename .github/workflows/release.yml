@@ -1,0 +1,43 @@
+name: Release on Merge to Main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Get previous tag
+      id: previous_tag
+      run: echo ::set-output name=tag::$(git describe --tags --abbrev=0 HEAD^)
+
+    - name: Increment version number
+      id: version
+      run: |
+        echo "Previous release tag: ${{ steps.previous_tag.outputs.tag }}"
+        IFS='.' read -r -a version <<< "$RELEASE_VERSION"
+        version[2]=$((version[2]+1))
+        echo "New release tag: v${version[0]}.${version[1]}.${version[2]}"
+        echo "::set-output name=new_tag::v${version[0]}.${version[1]}.${version[2]}"
+
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1.0.5
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.version.outputs.new_tag }}
+        release_name: Release ${{ steps.version.outputs.new_tag }}
+        body: ${{ github.event.pull_request.body }}
+
+    - name: Comment on PR
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        comment_url="${{ github.event.pull_request.comments_url }}"
+        curl -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" --data "{ \"body\": \"Release created: https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.new_tag }}\" }" "$comment_url"

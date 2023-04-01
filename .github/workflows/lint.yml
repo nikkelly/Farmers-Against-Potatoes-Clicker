@@ -1,0 +1,41 @@
+name: Lint
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+
+    - name: Run flake8 and generate report
+      run: |
+        flake8 . --output-file flake8_report.txt || true
+
+    - name: Comment on PR
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [[ -s flake8_report.txt ]]; then
+          pr_comment=":warning: **Flake8 Linting Issues**
+
+          \`\`\`
+          $(cat flake8_report.txt)
+          \`\`\`
+          "
+          comment_url="${{ github.event.pull_request.comments_url }}"
+          curl -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" --data "{ \"body\": \"$pr_comment\" }" "$comment_url"
+        fi
