@@ -35,7 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.NEW_TAG }}
-          release_name: Release ${{ env.NEW_TAG }}
+          release_name: Release ${{ env.NEW_TAG }} - ${{ github.event.pull_request.title }}
           body: ${{ github.event.pull_request.body }}
           draft: true
           prerelease: true
