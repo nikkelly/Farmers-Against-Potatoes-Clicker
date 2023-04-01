@@ -1,82 +1,81 @@
 import pyautogui
-import cv2
 import time
 
-LOCATECOUNT = 0
-STARTFIND = 0 
-GAME_STARTED = False
-POTATO_COUNT = 0
+class FarmersAgainstPotatoes:
+    def __init__(self):
+        self.locate_count = 0
+        self.start_find = 0
+        self.game_started = False
+        self.potato_count = 0
 
-def clickStart():
-    global STARTFIND
-    global GAME_STARTED
+    def click_start(self):
+        """Click the start button to initiate the game."""
+        start_button = pyautogui.locateOnScreen('images/960x540/start.png', confidence=0.8)
 
-    startButton = pyautogui.locateOnScreen('images/960x540/start.png',confidence=0.8)
+        if start_button is not None:
+            print('Starting Game')
+            pyautogui.moveTo(start_button)
+            pyautogui.click()
+            print("Waiting for game to start")
+            time.sleep(3)
+            self.game_started = True
+        else:
+            self.start_find += 1
 
-    if startButton != None:
-        print('Starting Game')
-        pyautogui.moveTo(startButton)
-        pyautogui.click()
-        print("Waiting for game to start")
-        time.sleep(3)
-        GAME_STARTED = True
+    def locate_good_potato(self):
+        """Locate and click good potatoes."""
+        good_potato_1 = pyautogui.locateOnScreen('images/960x540/goodPotato_1.png', confidence=0.55)
+        if good_potato_1 is not None:
+            pyautogui.moveTo(good_potato_1)
+            pyautogui.click()
+            print("Potato Found!")
+            self.potato_count += 1
 
-    else:
-        STARTFIND += 1
-        clickWhack()
+        good_potato_2 = pyautogui.locateOnScreen('images/960x540/goodPotato_2.png', confidence=0.55)
+        if good_potato_2 is not None:
+            pyautogui.moveTo(good_potato_2)
+            pyautogui.click()
+            print("Potato Found!")
+            self.potato_count += 1
 
-def locateGoodPotato():
-    global LOCATECOUNT
-    global POTATO_COUNT
+        time_to_count = pyautogui.locateOnScreen('images/960x540/timetocount.png', confidence=0.9)
+        if time_to_count is not None:
+            print("Times up!")
+            self.locate_count = 1
 
-    goodPotato_1 = pyautogui.locateOnScreen('images/960x540/goodPotato_1.png',confidence=0.55)
-    if goodPotato_1 != None:
-        pyautogui.moveTo(goodPotato_1)
-        pyautogui.click()
-        print("Potato Found!")
-        POTATO_COUNT += 1
+    def countdown(self, time_sec):
+        """Perform a countdown and display the remaining time."""
+        while time_sec:
+            mins, secs = divmod(time_sec, 60)
+            time_format = f'{mins:02d}:{secs:02d}'
+            print(time_format, end='\r')
+            time.sleep(1)
+            time_sec -= 1
 
+        print("Start Button Missing!")
 
-    goodPotato_2 = pyautogui.locateOnScreen('images/960x540/goodPotato_2.png',confidence=0.55)
-    if goodPotato_2 != None:
-        pyautogui.moveTo(goodPotato_2)
-        pyautogui.click()
-        print("Potato Found!")
-        POTATO_COUNT += 1
-    
-    timetocount = pyautogui.locateOnScreen('images/960x540/timetocount.png',confidence=0.9)
-    if timetocount != None:
-        print("Times up!")
-        LOCATECOUNT = 1
+    def play_game(self):
+        while True:
+            try:
+                if self.game_started:
+                    self.locate_good_potato()
+                else:
+                    print('Trying to start')
+                    self.click_start()
+                    self.locate_count = 0
+                if self.locate_count == 1 and self.game_started:
+                    print(f"Game Finished - Potato Count: {self.potato_count}")
+                    self.game_started = False
+                    self.locate_count = 0
+                    print('Sleeping for 5 minutes')
+                    self.countdown(60 * 5)
+            except:
+                print(f"GameStarted = {self.game_started}")
+                self.countdown(10)
 
+def main():
+    game = FarmersAgainstPotatoes()
+    game.play_game()
 
-def countdown(time_sec):
-    while time_sec:
-        mins, secs = divmod(time_sec, 60)
-        timeformat = '{:02d}:{:02d}'.format(mins, secs)
-        print(timeformat, end='\r')
-        time.sleep(1)
-        time_sec -= 1
-
-    print("Start Button Missing!")
-
-while True:
-    try:
-        if GAME_STARTED == True:
-            # t_end = time.time() + 63
-            locateGoodPotato()
-        if GAME_STARTED == False:
-            print('Trying to start')
-            clickStart()
-            LOCATECOUNT = 0
-        if LOCATECOUNT == 1 and GAME_STARTED == True:
-            print("Game Finished - Potato Count: "+ str(POTATO_COUNT))
-            GAME_STARTED = False
-            LOCATECOUNT = 0
-            print('Sleeping for 5 mintues')
-            # time.sleep(60*5) # sleep for 5 minutes
-            countdown(60*5)
-    except:
-        # time.sleep(10)
-        print("GameStarted = "+str(GAME_STARTED))
-        countdown(10)
+if __name__ == '__main__':
+    main()
