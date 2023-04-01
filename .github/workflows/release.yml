@@ -14,7 +14,7 @@ jobs:
 
       - name: Get previous tag
         run: |
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^)
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1))
           echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
 
       - name: Increment version number
